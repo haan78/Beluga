@@ -5,7 +5,6 @@ namespace Beluga {
     {
         private $target;
         private Db $db;
-        private bool $aborted = false;
 
         public function __construct(string $target, Db $db)
         {
@@ -21,13 +20,13 @@ namespace Beluga {
             return date('ymdHis') . "-" . uniqid();
         }
 
-        public function delete($c = null): Document
+        public function delete($fnc): Document
         {
-            $arr = $this->get($c);
-            if ( $this->aborted ) {
-                $this->db->__setAffectedIds([]);
-                return $this;
-            }
+            $arr = $this->get(function(Scope $s) use ($fnc){
+                if ($fnc($s->data())) {
+                    $s->accept($s->data());
+                }
+            });
             $ids = array_keys($arr);
             $j = 0;
             for ($i = 0; $i < count($ids); $i++) {
@@ -39,54 +38,73 @@ namespace Beluga {
             return $this;
         }
 
-        public function save($c,array $datalist = []) : Document {
-            $arr = $this->get($c);
-            if ( $this->aborted ) {
-                $this->db->__setAffectedIds([]);
-                return $this;
-            }
+        public function update($fnc) {
+            $arr = $this->get(function (Scope $s) use ($fnc) {
+                $result = $fnc($s->data());
+                if ($result !==FALSE) {
+                    $s->accept($result);                    
+                }
+            });
             $ids = [];
-            foreach ($arr as $id => $row) {
-                $file = $this->target . "/" . $id . ".json";
-                IO::write($file,$row);
+            foreach ($arr as $id => $v) {
+                $file = $this->target . "/$id.json";
+                IO::write($file,$v);
                 array_push($ids,$id);
             }
-            if (count($ids)==0) {
-                for($j=0; $j<count($datalist); $j++) {
-                    $id = $this->createId();
-                    $file = $this->target . "/$id.json";
-                    IO::write($file,$datalist[$j]);
-                    array_push($ids,$id);
-                }
-            }
             $this->db->__setAffectedIds($ids);
-            return $this;
         }
 
-        public function list($c = null): array
+        public function updateOrInsert($fnc,$data) {
+
+            $arr = $this->get(function (Scope $s) use ($fnc,$data) {
+                if ($fnc($s->data(),$data)) {
+                    $s->accept($data);
+                    $s->stop();
+                }
+            });
+            $id = null;
+            $ids = array_keys($arr);
+            if ( count($ids) === 0 ) {
+                $id = $this->createId();          
+            } else {
+                $id = $ids[0];
+                $file = $this->target . "/" . $id . ".json";
+            }
+            $file = $this->target . "/$id.json";
+            IO::write($file,$data);   
+            $this->db->__setAffectedIds([$id]);
+        }
+
+        public function multiInsert(array $datalist) {
+            $ids = [];
+            for($i=0;$i<count($datalist); $i++) {
+                $id = $id = $this->createId();
+                $file = $this->target . "/" . $id . ".json";
+                IO::write($file,$datalist[$i]);
+                array_push($ids,$id); 
+            }
+            $this->db->__setAffectedIds($ids);
+        }
+
+        public function list($fnc = null): array
         {
-            $resultset = $this->get($c); 
+            $resultset = [];
+            if ( is_null($fnc) ) {
+                $resultset = $this->get(); 
+            } else {
+                $resultset = $this->get(function(Scope $s) use($fnc){
+                    if ( $fnc($s->data()) ) {
+                        $s->accept($s->data()) ;
+                    }
+                });
+            }
+            
             $this->db->__setAffectedIds(array_keys($resultset));
             return array_values($resultset);
         }
 
-        public function first($c = null)
-        {
-            $arr = $this->get($c);
-            $k = array_key_first($arr);
-            return is_null($k) ? null : $arr[$k];
-        }
-
-        public function last($c = null)
-        {
-            $arr = $this->get($c);
-            $k = array_key_last($arr);
-            return is_null($k) ? null : $arr[$k];
-        }
-
         private function get($c = null): array
         {
-            $this->aborted = false;
             $files = glob($this->target . "/*.json");
             $scope = new Scope($this->db);
             $j = 0;
@@ -100,9 +118,8 @@ namespace Beluga {
                 $scope->__setData($data, $id);
                 if (isset($c)) {
                     $c($scope);
-                    if ( $scope->isAborted() ) {
-                        $this->aborted = true;
-                        return [];
+                    if ( $scope->isStopped() ) {
+                        return $scope->__getResult();
                     }
                 } else {
                     $scope->accept($data);

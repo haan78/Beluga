@@ -8,7 +8,6 @@ namespace Beluga {
 
     class Db {
 
-        private $session = [];
         private $dataFolder;
         
         private array $affectedIds = [];
@@ -21,19 +20,6 @@ namespace Beluga {
             
             $this->dataFolder = $target;
             $this->scope = new Scope($this);
-        }
-
-        public function keep(string $name,$value = null) {
-            if ( is_null($value) ) {
-                return $this->session[$name];
-            } else {
-                $this->session[$name] = $value;
-                return true;
-            }
-        }
-
-        public function clear() {
-            $this->session = [];
         }
 
         public function getAffectedIds() : array {

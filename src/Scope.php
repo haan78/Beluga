@@ -7,18 +7,23 @@ namespace Beluga {
         private $data;
         private string $id;
         private array $resultset = [];
-        private bool $aborted = false;
+        private bool $stopped = false;
         public function __construct(Db $db)
         {
             $this->db = $db;
         }
 
-        public function aborte() : void {
-            $this->aborted = true;
+        public function abort() : void {
+            $this->resultset = [];
+            $this->stopped = true;
         }
 
-        public function isAborted() : bool {
-            return $this->aborted;
+        public function stop() : void {
+            $this->stop = true;
+        }
+
+        public function isStopped() {
+            return $this->stopped;
         }
 
         public function db() : Db {
