@@ -30,14 +30,6 @@ namespace Beluga {
             return $this->db;
         }
 
-        public function keep(string $name,$value = null) {
-            return $this->db->keep($name,$value);
-        }
-
-        public function clear() {
-            $this->db->clear();
-        }
-
         public function data()  {
             return $this->data;
         }
