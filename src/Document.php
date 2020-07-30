@@ -38,7 +38,7 @@ namespace Beluga {
             return $this;
         }
 
-        public function update($fnc) {
+        public function update($fnc) : Document {
             $arr = $this->get(function (Scope $s) use ($fnc) {
                 $result = $fnc($s->data());
                 if ($result !==FALSE) {
@@ -52,9 +52,10 @@ namespace Beluga {
                 array_push($ids,$id);
             }
             $this->db->__setAffectedIds($ids);
+            return $this;
         }
 
-        public function updateOrInsert($fnc,$data) {
+        public function updateOrInsert($fnc,$data) : Document {
 
             $arr = $this->get(function (Scope $s) use ($fnc,$data) {
                 if ($fnc($s->data(),$data)) {
@@ -73,9 +74,10 @@ namespace Beluga {
             $file = $this->target . "/$id.json";
             IO::write($file,$data);   
             $this->db->__setAffectedIds([$id]);
+            return $this;
         }
 
-        public function multiInsert(array $datalist) {
+        public function multiInsert(array $datalist) : Document {
             $ids = [];
             for($i=0;$i<count($datalist); $i++) {
                 $id = $id = $this->createId();
@@ -84,6 +86,7 @@ namespace Beluga {
                 array_push($ids,$id); 
             }
             $this->db->__setAffectedIds($ids);
+            return $this;
         }
 
         public function list($fnc = null): array
