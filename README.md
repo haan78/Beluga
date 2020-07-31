@@ -12,7 +12,7 @@ if the directory doesn't exist it will be created.
     Command returns database handler.
 
 ### Example
-    `$db = new \Beluga\Db("data");`
+    $db = new \Beluga\Db("data");
 
 ## Creating or Connecting to Document
 document(string [Document Name]);
@@ -24,7 +24,7 @@ if the document does not exist it will be created.
     Command returns database handler.
 
 ### Example
-    `$db->document("document1")`
+    $db->document("document1")
     
 ## Insert Data into Document
 insert(array [DataSet])
@@ -39,6 +39,24 @@ insert(array [DataSet])
       [
         [ "StudentName" => "Ali", "StudentId"=> 1 ],
         [ "StudentName" => "Veli", "StudentId"=> 2 ],
-        [ "StudentName" => "Didem", "StudentId"=> 3 ]
+        [ "StudentName" => "Erdem", "StudentId"=> 3 ]
       ]  
     );
+
+## Update Data in a Document
+update( callable [Handler Function] )
+
+## Parameter(s)
+- Handler Function : It is a user defined void function whih has two paramaeters Database Handler and Data Scope.   
+
+### Return Value 
+    Command returns database handler.
+
+### Example
+    $db->update(function(Db $db,Scope $s) {
+        $data = $s->data();
+        if ($data["StudentId"] == 3) {
+            $data["StudentName"] = "Didem";
+            $s->accept($data);
+        }
+    });
