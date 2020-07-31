@@ -20,60 +20,40 @@ namespace Beluga {
             return date('ymdHis') . "-" . uniqid();
         }
 
-        public function delete($fnc): Document
+        public function delete(callable $fnc): Document
         {
-            $arr = $this->get(function(Scope $s) use ($fnc){
-                if ($fnc($s->data())) {
-                    $s->accept($s->data());
-                }
-            });
-            $ids = array_keys($arr);
+            $arr = $this->get($fnc);
             $j = 0;
-            for ($i = 0; $i < count($ids); $i++) {
-                $id = $ids[$i];
+            foreach($arr as $id => $v) {
                 $file = $this->target . "/$id.json";
                 IO::remove($file);
             }
-            $this->db->__setAffectedIds($ids);
             return $this;
         }
 
-        public function update($fnc) : Document {
-            $arr = $this->get(function (Scope $s) use ($fnc) {
-                $result = $fnc($s->data());
-                if ($result !==FALSE) {
-                    $s->accept($result);                    
-                }
-            });
-            $ids = [];
+        public function update(callable $fnc) : Document {
+            $arr = $this->get($fnc);
             foreach ($arr as $id => $v) {
                 $file = $this->target . "/$id.json";
                 IO::write($file,$v);
-                array_push($ids,$id);
             }
-            $this->db->__setAffectedIds($ids);
             return $this;
         }
 
-        public function updateOrInsert($fnc,$data) : Document {
+        public function updateOrInsert(callable $fnc,$data) : Document {
 
-            $arr = $this->get(function (Scope $s) use ($fnc,$data) {
-                if ($fnc($s->data(),$data)) {
-                    $s->accept($data);
-                    $s->stop();
-                }
-            });
+            $arr = $this->get(function (Db $db,Scope $s) use ($fnc,$data) {
+                $fnc($db,$s,$data);
+            },1);
             $id = null;
-            $ids = array_keys($arr);
-            if ( count($ids) === 0 ) {
+            if ( count($arr) === 0 ) {
                 $id = $this->createId();          
             } else {
-                $id = $ids[0];
+                $id = array_keys($arr)[0];
                 $file = $this->target . "/" . $id . ".json";
             }
             $file = $this->target . "/$id.json";
-            IO::write($file,$data);   
-            $this->db->__setAffectedIds([$id]);
+            IO::write($file,$data);
             return $this;
         }
 
@@ -89,47 +69,41 @@ namespace Beluga {
             return $this;
         }
 
-        public function list($fnc = null): array
+        public function list(callable $fnc): array
         {
-            $resultset = [];
-            if ( is_null($fnc) ) {
-                $resultset = $this->get(); 
-            } else {
-                $resultset = $this->get(function(Scope $s) use($fnc){
-                    if ( $fnc($s->data()) ) {
-                        $s->accept($s->data()) ;
-                    }
-                });
-            }
+            $resultset = $this->get($fnc);
             
             $this->db->__setAffectedIds(array_keys($resultset));
             return array_values($resultset);
         }
 
-        private function get($c = null): array
-        {
-            $files = glob($this->target . "/*.json");
-            $scope = new Scope($this->db);
-            $j = 0;
-            for ($i = 0; $i < count($files); $i++) {
-                $file = $files[$i];
-                $id = basename($file,".json");
-                $data = json_decode(file_get_contents($file), true);
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    throw new \Beluga\Exception("Data read error / $file");
-                }
-                $scope->__setData($data, $id);
-                if (isset($c)) {
-                    $c($scope);
-                    if ( $scope->isStopped() ) {
-                        return $scope->__getResult();
+        private function get(callable $fnc,?int $limit = null) {
+            $scope = new Scope();
+            $dir_handle = opendir($this->target);
+            if ( $dir_handle ) {
+                $i = 0;
+                while ($file = readdir($dir_handle)) {
+                    $info = pathinfo($file);
+                    if ($info["extension"]=="json") {
+                        $id = $info['filename'];
+                        $data = IO::read($file); 
+                        $scope->__setData($data, $id); 
+                        $fnc($this->db,$scope);
+                        if ($scope->isStopped()) {
+                            break;
+                        }
+                        $i++;    
+                        if ( !is_null($limit) && $i==$limit ) {
+                            break;
+                        }              
                     }
-                } else {
-                    $scope->accept($data);
                 }
-                $j++;
+                closedir($dir_handle);
+                $this->db->__setAffectedIds(array_keys($scope->__getResult()));
+                return $scope->__getResult();
+            } else {
+                new \Beluga\Exception("Folder can't read ".$this->target);
             }
-            return $scope->__getResult();
         }
     }
 }

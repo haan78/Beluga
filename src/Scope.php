@@ -2,15 +2,13 @@
 namespace Beluga {
 
     class Scope {
-        private Db $db;
-
+ 
         private $data;
         private string $id;
         private array $resultset = [];
         private bool $stopped = false;
-        public function __construct(Db $db)
+        public function __construct()
         {
-            $this->db = $db;
         }
 
         public function abort() : void {
@@ -24,10 +22,6 @@ namespace Beluga {
 
         public function isStopped() {
             return $this->stopped;
-        }
-
-        public function db() : Db {
-            return $this->db;
         }
 
         public function data()  {
