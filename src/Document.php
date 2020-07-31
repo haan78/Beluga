@@ -57,7 +57,7 @@ namespace Beluga {
             return $this;
         }
 
-        public function multiInsert(array $datalist) : Document {
+        public function insert(array $datalist) : Document {
             $ids = [];
             for($i=0;$i<count($datalist); $i++) {
                 $id = $id = $this->createId();

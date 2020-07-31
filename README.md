@@ -1,13 +1,44 @@
 # Beluga
 PHP based NoSql Database Engine
 
-
 ## Create Database
-new \Beluga\Db("[path]");
-if the directory doesn't exist it will be created. But to do, this of course write-permission is required.
+    Db:Constructor(string [Data Directory])
+if the directory doesn't exist it will be created.
 
-### Exemple
-    $db = new \Beluga\Db("data");
+### Parameter(s)
+- Data Directory(String): It is the path of the directory which is storing data. Write-permission is required to create ,insert, update, delete, or drop actions.
+
+### Return Value
+    Command returns database handler.
+
+### Example
+    `$db = new \Beluga\Db("data");`
 
 ## Creating or Connecting to Document
-$db->document("[document name]");
+document(string [Document Name]);
+if the document does not exist it will be created.
+### Parameter(s)
+- Document Name(string): It is the name of the document which is focusing on.
+
+### Return Value
+    Command returns database handler.
+
+### Example
+    `$db->document("document1")`
+    
+## Insert Data into Document
+insert(array [DataSet])
+### Parameter(s)
+- DataSet: It is an array of objects. Each object will be saved to disk as a new record.
+
+### Return Value 
+    Command returns database handler.
+
+### Example
+    $db->insert(
+      [
+        [ "StudentName" => "Ali", "StudentId"=> 1 ],
+        [ "StudentName" => "Veli", "StudentId"=> 2 ],
+        [ "StudentName" => "Didem", "StudentId"=> 3 ]
+      ]  
+    );
