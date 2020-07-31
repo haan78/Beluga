@@ -71,10 +71,13 @@ namespace Beluga {
 
         public function list(callable $fnc): array
         {
-            $resultset = $this->get($fnc);
-            
-            $this->db->__setAffectedIds(array_keys($resultset));
+            $resultset = $this->get($fnc);            
             return array_values($resultset);
+        }
+
+        public function first(callable $fnc) {
+            $resultset = $this->get($fnc);
+            return ( count($resultset) > 0 ? array_values($resultset)[0] : null );
         }
 
         private function get(callable $fnc,?int $limit = null) {
@@ -82,8 +85,10 @@ namespace Beluga {
             $dir_handle = opendir($this->target);
             if ( $dir_handle ) {
                 $i = 0;
-                while ($file = readdir($dir_handle)) {
+                while ($fn = readdir($dir_handle)) {
+                    $file = $this->target."/$fn";
                     $info = pathinfo($file);
+                    //var_dump($info);
                     if ($info["extension"]=="json") {
                         $id = $info['filename'];
                         $data = IO::read($file); 
