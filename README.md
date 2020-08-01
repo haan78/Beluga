@@ -2,7 +2,7 @@
 PHP based NoSql Database Engine
 
 ## Create Database
-    Db:Constructor(string [Data Directory])
+    Db:Constructor(string [Data Directory]) : [database handler]
 if the directory doesn't exist it will be created.
 
 ### Parameter(s)
@@ -24,7 +24,7 @@ if the document does not exist it will be created.
     Command returns database handler.
 
 ### Example
-    $db->document("document1")
+    $db->document("document1");
     
 ## Insert Data into Document
 insert(array [DataSet])
@@ -53,7 +53,7 @@ insert(array [DataSet])
     );
 
 ## Update Data in a Document
-update( callable [Handler Function] )
+update( callable [Handler Function] ) : [database handler]
 
 ## Parameter(s)
 - Handler Function(callable) : It is a user defined void function which has [Scope](#scope-class) parameter.   
@@ -71,7 +71,7 @@ update( callable [Handler Function] )
     });
 
 ## Delete Data From Document
-    delete(callable [Handler Function] )
+    delete(callable [Handler Function] ) : [database handler]
 
 ### Parameter(s)
 - Handler Function(callable) : It is a user defined void function which has [Scope](#scope-class) parameter. 
@@ -108,4 +108,11 @@ update( callable [Handler Function] )
     });
     
 ## Scope Class
-    lkjşlkjş
+    Scope {
+        public data : complex   //Indicates each data in document
+        public id : string      //Indicates each data record id
+        public accept(data : complex) : void  //This method is used for accepting data
+        public denied() : void //This method is used for cancelling last accept command
+        public stop() : void  //This method is used for stopping the loop. Accepted records before this command are readable  
+        public abort() : void //This method is used for stopping the loop. Accepted records before this command will be removed  
+    }
