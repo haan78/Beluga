@@ -3,12 +3,32 @@ namespace Beluga {
 
     class Scope {
  
-        public $data;
+        private $data;
         private string $id;
         private array $resultset = [];
         private bool $stopped = false;
-        public function __construct()
+
+        public function __construct() {
+        }
+
+        public function __get($name)
         {
+            if ( $name == "data" ) {
+                return $this->data;
+            } elseif ($name == "id") {
+                return $this->id;
+            } else {
+                throw new \Beluga\Exception("Unsupported access variable on scope");
+            }
+        }
+
+        public function __set($name, $value)
+        {
+            if ( $name == "data" || $name == "id") {
+                throw new \Beluga\Exception("The read-only variable can not set on the scope. Please use the `accept` method");
+            } else {
+                throw new \Beluga\Exception("Unsupported access variable on scope");
+            }
         }
 
 
@@ -25,23 +45,21 @@ namespace Beluga {
             return $this->stopped;
         }
 
-        public function data()  {
-            return $this->data;
-        }
-
-        public function accept($obj = FALSE) {
+        public function accept($obj = FALSE) : void {
             if ($obj === FALSE) {
                 $this->resultset[$this->id] = $this->data;
             }  else {
                 $this->resultset[$this->id] = $obj;
-            }                  
+            }
         }
 
-        public function getId() : string {
-            return $this->id;
+        public function denied() : void {
+            if ( isset($this->resultset[$this->id]) ) {
+                unset($this->resultset[$this->id]);
+            }
         }
 
-        public function __setData($data,string $id) {
+        public function __setData($data,string $id) : void {
             $this->data = $data;
             $this->id = $id;
         }

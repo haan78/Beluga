@@ -43,6 +43,15 @@ insert(array [DataSet])
       ]  
     );
 
+    $db->insert(
+        [ "courseName" => "Math", "StudentId"=> 1 ],
+        [ "courseName" => "Chemistry", "StudentId"=> 1 ]
+        [ "courseName" => "Math", "StudentId"=> 2 ],
+        [ "courseName" => "Physics", "StudentId"=> 2 ],
+        [ "courseName" => "Literature", "StudentId"=> 2 ]
+        [ "courseName" => "Literature", "StudentId"=> 3 ]
+    );
+
 ## Update Data in a Document
 update( callable [Handler Function] )
 
@@ -54,7 +63,7 @@ update( callable [Handler Function] )
 
 ### Example
     $db->update(function(Scope $s) {
-        $data = $s->data();
+        $data = $s->data;
         if ($data["StudentId"] == 3) {
             $data["StudentName"] = "Didem";
             $s->accept($data);
@@ -65,18 +74,24 @@ update( callable [Handler Function] )
     delete(callable [Handler Function] )
 
 ### Parameter(s)
-- Handler Function(callable): It is a user defined void function which has Scope parameter. 
+- Handler Function(callable) : It is a user defined void function which has [Scope](#scope-class) parameter. 
 
 ### Return Value 
     Command returns database handler.
 
 ### Example
     $db->delete(function(Scope $s) {
-        $data = $s->data();
+        $data = $s->data;
         if ($data["StudentId"] == 2) {
             $s->accept(true);
         }
     });
+
+## List Data From Document
+    list(callable [Handler Function])
+
+### Parameter(s)
+- Handler Function(callable) : It is a user defined void function which has [Scope](#scope-class) parameter.
     
 ## Scope Class
     lkjşlkjş
