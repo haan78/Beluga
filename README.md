@@ -109,8 +109,8 @@ update( callable [Handler Function] ) : [database handler]
     
 ## Scope Class
     Scope {
-        public data : complex   //Indicates each data in document
-        public id : string      //Indicates each data record id
+        public data : complex   //Indicates each record value in the document
+        public id : string      //Indicates each record id in the document
         public accept(data : complex) : void  //This method is used for accepting data
         public denied() : void //This method is used for cancelling last accept command
         public stop() : void  //This method is used for stopping the loop. Accepted records before this command are readable  
