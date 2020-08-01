@@ -8,7 +8,7 @@ namespace Beluga {
 
     class Db {
 
-        private $dataFolder;
+        private string $dataFolder;
         
         private array $affectedIds = [];
 
@@ -20,6 +20,10 @@ namespace Beluga {
             
             $this->dataFolder = $target;
             $this->scope = new Scope($this);
+        }
+
+        public function getDataFolder() : string {
+            return $this->dataFolder;
         }
 
         public function getAffectedIds() : array {
@@ -41,7 +45,7 @@ namespace Beluga {
             if ( !is_dir($this->dataFolder."/".$name) ) {
                 mkdir($this->dataFolder."/".$name);
             }
-            return new \Beluga\Document($this->dataFolder."/".$name,$this);
+            return new \Beluga\Document($this,$name);
         }
 
         public function exist($documentName) {

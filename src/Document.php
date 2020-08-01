@@ -5,19 +5,18 @@ namespace Beluga {
     {
         private $target;
         private Db $db;
+        private string $name;
 
-        public function __construct(string $target, Db $db)
+        public function __construct(Db $db,$name)
         {
+            $target = $db->getDataFolder()."/$name";
             if (is_dir($target)) {
+                $this->name = $name;
                 $this->target = $target;
                 $this->db = $db;
             } else {
                 throw new \Beluga\Exception("Folder not found!");
             }
-        }
-
-        private function createId() {
-            return date('ymdHis') . "-" . uniqid();
         }
 
         public function delete(callable $fnc): Document
@@ -42,12 +41,12 @@ namespace Beluga {
 
         public function updateOrInsert(callable $fnc,$data) : Document {
 
-            $arr = $this->get(function (Db $db,Scope $s) use ($fnc,$data) {
-                $fnc($db,$s,$data);
+            $arr = $this->get(function (Scope $s) use ($fnc,$data) {
+                $fnc($s,$data);
             },1);
             $id = null;
             if ( count($arr) === 0 ) {
-                $id = $this->createId();          
+                $id = IO::createId($this->name);          
             } else {
                 $id = array_keys($arr)[0];
                 $file = $this->target . "/" . $id . ".json";
@@ -60,7 +59,7 @@ namespace Beluga {
         public function insert(array $datalist) : Document {
             $ids = [];
             for($i=0;$i<count($datalist); $i++) {
-                $id = $id = $this->createId();
+                $id = $id = IO::createId($this->name); 
                 $file = $this->target . "/" . $id . ".json";
                 IO::write($file,$datalist[$i]);
                 array_push($ids,$id); 
@@ -93,7 +92,7 @@ namespace Beluga {
                         $id = $info['filename'];
                         $data = IO::read($file); 
                         $scope->__setData($data, $id); 
-                        $fnc($this->db,$scope);
+                        $fnc($scope);
                         if ($scope->isStopped()) {
                             break;
                         }

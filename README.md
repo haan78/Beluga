@@ -47,16 +47,36 @@ insert(array [DataSet])
 update( callable [Handler Function] )
 
 ## Parameter(s)
-- Handler Function : It is a user defined void function whih has two paramaeters Database Handler and Data Scope.   
+- Handler Function(callable) : It is a user defined void function which has [Scope](#scope-class) parameter.   
 
 ### Return Value 
     Command returns database handler.
 
 ### Example
-    $db->update(function(Db $db,Scope $s) {
+    $db->update(function(Scope $s) {
         $data = $s->data();
         if ($data["StudentId"] == 3) {
             $data["StudentName"] = "Didem";
             $s->accept($data);
         }
     });
+
+## Delete Data From Document
+    delete(callable [Handler Function] )
+
+### Parameter(s)
+- Handler Function(callable): It is a user defined void function which has Scope parameter. 
+
+### Return Value 
+    Command returns database handler.
+
+### Example
+    $db->delete(function(Scope $s) {
+        $data = $s->data();
+        if ($data["StudentId"] == 2) {
+            $s->accept(true);
+        }
+    });
+    
+## Scope Class
+    lkjşlkjş

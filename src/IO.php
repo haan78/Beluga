@@ -5,6 +5,10 @@ namespace Beluga {
 
     class IO
     {
+
+        public static function createId(string $documentName) {
+            return $documentName."-" . date('ymdHis') . "-" . uniqid();
+        }
         
         public static function delete_directory($dirname)
         {
