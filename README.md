@@ -35,7 +35,7 @@ insert(array [DataSet])
     Command returns database handler.
 
 ### Example
-    $db->insert(
+    $db->document("students")->insert(
       [
         [ "StudentName" => "Ali", "StudentId"=> 1 ],
         [ "StudentName" => "Veli", "StudentId"=> 2 ],
@@ -43,7 +43,7 @@ insert(array [DataSet])
       ]  
     );
 
-    $db->insert(
+    $db->document("courses")->insert(
         [ "courseName" => "Math", "StudentId"=> 1 ],
         [ "courseName" => "Chemistry", "StudentId"=> 1 ]
         [ "courseName" => "Math", "StudentId"=> 2 ],
@@ -62,7 +62,7 @@ update( callable [Handler Function] )
     Command returns database handler.
 
 ### Example
-    $db->update(function(Scope $s) {
+    $db->document("students")->update(function(Scope $s) {
         $data = $s->data;
         if ($data["StudentId"] == 3) {
             $data["StudentName"] = "Didem";
@@ -80,7 +80,7 @@ update( callable [Handler Function] )
     Command returns database handler.
 
 ### Example
-    $db->delete(function(Scope $s) {
+    $db->document("students")->delete(function(Scope $s) {
         $data = $s->data;
         if ($data["StudentId"] == 2) {
             $s->accept(true);
@@ -88,10 +88,24 @@ update( callable [Handler Function] )
     });
 
 ## List Data From Document
-    list(callable [Handler Function])
+    list(callable [Handler Function]) : array
 
 ### Parameter(s)
 - Handler Function(callable) : It is a user defined void function which has [Scope](#scope-class) parameter.
+
+### Return Value 
+    An array of returning datasets.
+
+### Example
+    $db->document("students")->list(function(Scope $s) use($db) {
+        $d = $s->data;
+        $d["courses"] = $db->document("courses")->list(function(Scope $s) use($d) {
+            if ( $s->data["StudentId"] == $d["StudentId"] ) {
+                $s->accept($s->data["courseName"]);
+            }
+        });
+        $s->accept($d);
+    });
     
 ## Scope Class
     lkjşlkjş
