@@ -2,9 +2,10 @@
 
 namespace Beluga {
 
+    require_once "Exception.php";
     require_once "IO.php";
     require_once "Document.php";
-    require_once "Exception.php";
+    require_once "Scope.php";
 
     class Db {
 
@@ -54,36 +55,6 @@ namespace Beluga {
             return is_dir($this->dataFolder."/$documentName");
         }
 
-        public function info() : array {
-            $list = scandir($this->dataFolder);
-            $l = [];
-            $tcount = 0;
-            $tsize = 0;
-            for ($i=0; $i<count($list); $i++) {
-                $item = $list[$i];
-                //echo $item.PHP_EOL;
-                $d = $this->dataFolder."/".$item;
-                if ($item !="." && $item != ".." && is_dir($d) ) {
-                    $files = glob("$d/*.json");
-                    $size = 0;
-                    $count = count($files);
-                    for ($j = 0; $j < $count; $j++) {
-                        $size += filesize($files[$j]);
-                    }
-                    $tcount += $count;
-                    $tsize += $size;
-                    $l[$item] = [
-                        "SIZE"=>$size,
-                        "COUNT"=>$count
-                    ];
-                }
-            }
-            $l["TOTAL"] = [
-                "SIZE"=>$tsize,
-                "COUNT"=>$tcount
-            ];
-            return $l;
-        }
     }
 }
 

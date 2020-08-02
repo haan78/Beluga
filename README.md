@@ -36,21 +36,23 @@ insert(array [DataSet])
 
 ### Example
     $db->document("students")->insert(
-      [
-        [ "StudentName" => "Ali", "StudentId"=> 1 ],
-        [ "StudentName" => "Veli", "StudentId"=> 2 ],
-        [ "StudentName" => "Erdem", "StudentId"=> 3 ]
-      ]  
-    );
+    [
+      [ "StudentName" => "Ali", "StudentId"=> 1 ],
+      [ "StudentName" => "Veli", "StudentId"=> 2 ],
+      [ "StudentName" => "Hande", "StudentId"=> 3 ]
+    ]  
+  );
 
-    $db->document("courses")->insert(
+  $db->document("courses")->insert(
+      [
         [ "courseName" => "Math", "StudentId"=> 1 ],
-        [ "courseName" => "Chemistry", "StudentId"=> 1 ]
+        [ "courseName" => "Chemistry", "StudentId"=> 1 ],
         [ "courseName" => "Math", "StudentId"=> 2 ],
         [ "courseName" => "Physics", "StudentId"=> 2 ],
-        [ "courseName" => "Literature", "StudentId"=> 2 ]
+        [ "courseName" => "Literature", "StudentId"=> 2 ],
         [ "courseName" => "Literature", "StudentId"=> 3 ]
-    );
+      ]      
+  );
 
 ## Update Data in a Document
 update( callable [Handler Function] ) : [database handler]
@@ -64,8 +66,8 @@ update( callable [Handler Function] ) : [database handler]
 ### Example
     $db->document("students")->update(function(Scope $s) {
         $data = $s->data;
-        if ($data["StudentId"] == 3) {
-            $data["StudentName"] = "Didem";
+        if ($data["StudentId"] == 2) {
+            $data["StudentName"] = "Batu";
             $s->accept($data);
         }
     });
@@ -97,7 +99,7 @@ update( callable [Handler Function] ) : [database handler]
     An array of returning datasets.
 
 ### Example
-    $db->document("students")->list(function(Scope $s) use($db) {
+    $list = $db->document("students")->list(function(Scope $s) use($db) {
         $d = $s->data;
         $d["courses"] = $db->document("courses")->list(function(Scope $s) use($d) {
             if ( $s->data["StudentId"] == $d["StudentId"] ) {
@@ -106,13 +108,21 @@ update( callable [Handler Function] ) : [database handler]
         });
         $s->accept($d);
     });
+
+    print_r($list);
     
 ## Scope Class
     Scope {
-        public data : complex   //Indicates each record value in the document
-        public id : string      //Indicates each record id in the document
-        public accept(data : complex) : void  //This method is used for accepting data
-        public denied() : void //This method is used for cancelling last accept command
-        public stop() : void  //This method is used for stopping the loop. Accepted records before this command are readable  
-        public abort() : void //This method is used for stopping the loop. Accepted records before this command will be removed  
+        public data : complex
+        public id : string
+        public accept(data : complex) : void
+        public denied() : void
+        public stop() : void 
+        public abort() : void
     }
+- data: Indicates each record value in the document
+- id: Indicates each record id in the document. It is a readonly property. 
+- accept: This method is used for accepting data for each element in the document. "data" parameter indicates an object which will be added to the query list.
+- denied: This method is used for canceling the last "accept" command. When the "denied" method calls the current element of the document is dropped from the query list.
+- stop: This method is used for stopping the loop. Accepted records before this command are reachable. But the loop will no be more continued.
+- abort: This method is used for stopping the loop. Accepted records before this command will be removed. That means all query operation will be canceled.
