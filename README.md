@@ -128,9 +128,9 @@ update( callable [Handler Function] ) : [database handler]
 - abort: This method is used for stopping the loop. Accepted records before this command will be removed. That means all query operation will be canceled.
 
 ## Other Database Commands
-- Db::drop([document name]) :void
+- Db::drop([document name]) :void<br/>
     Removes the document which has the given document name from the data directory.
-- Db::getDataFolder() : string
+- Db::getDataFolder() : string<br/>
     Returns the data directoy of the database.
-- Db::exists([document name]) : bool
-    Retunrs <b>TRUE</b> if document exists in data directory. Otherwise returns <b>FALSE</b> 
+- Db::exists([document name]) : bool<br/>
+    Returns TRUE if the document exists in the data directory. Otherwise returns FALSE 
