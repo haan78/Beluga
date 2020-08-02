@@ -9,24 +9,35 @@ namespace Beluga {
         public static function createId(string $documentName) {
             return $documentName."-" . date('ymdHis') . "-" . uniqid();
         }
+
+        public static function isWritable(string $target) : bool {
+            return is_writable($target);
+        }
         
         public static function delete_directory($dirname)
         {
-            if (is_dir($dirname))
+            $dir_handle = null;
+            if (is_dir($dirname)) {
                 $dir_handle = opendir($dirname);
-            if (!$dir_handle)
-                return false;
-            while ($file = readdir($dir_handle)) {
-                if ($file != "." && $file != "..") {
-                    if (!is_dir($dirname . "/" . $file))
-                        unlink($dirname . "/" . $file);
-                    else
-                        self::delete_directory($dirname . '/' . $file);
+                if ($dir_handle === FALSE) {
+                    return false;
                 }
-            }
-            closedir($dir_handle);
-            rmdir($dirname);
-            return true;
+                while ($file = readdir($dir_handle)) {
+                    if ($file != "." && $file != "..") {
+                        if (!is_dir($dirname . "/" . $file))
+                            if (!unlink($dirname . "/" . $file)) {
+                                return false;
+                            }
+                        elseif (!self::delete_directory($dirname . '/' . $file)) {
+                            return false;
+                        }
+                    }
+                }
+                closedir($dir_handle);
+                return rmdir($dirname);
+            } else {
+                return false;
+            }          
         }
 
         public static function read($file) {

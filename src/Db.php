@@ -35,15 +35,17 @@ namespace Beluga {
         }
 
         public function drop($name) : Db {
-            if ( is_dir($this->dataFolder."/".$name) ) {
-                IO::delete_directory($this->dataFolder."/".$name);
+            if (!IO::delete_directory($this->dataFolder."/$name")) {
+                throw new \Beluga\Exception("The document could not be dropped");
             }
             return $this;
         }
 
         public function document($name) : Document {
             if ( !is_dir($this->dataFolder."/".$name) ) {
-                mkdir($this->dataFolder."/".$name);
+                if ( mkdir($this->dataFolder."/".$name) === FALSE ) {
+                    throw new \Beluga\Exception("The document could not be created");
+                }
             }
             return new \Beluga\Document($this,$name);
         }
