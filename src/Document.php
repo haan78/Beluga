@@ -19,8 +19,7 @@ namespace Beluga {
             }
         }
 
-        public function delete(callable $fnc): Document
-        {
+        public function delete(callable $fnc): Document {
             $arr = $this->get($fnc);
             $j = 0;
             foreach($arr as $id => $v) {
@@ -56,6 +55,21 @@ namespace Beluga {
             return $this;
         }
 
+        public function find(callable $fnc) {
+            $arr = $this->get(function (Scope $s) use ($fnc) {
+                $fnc($s);
+                if (count($s->__getResult())>0) {
+                    $s->stop();
+                }
+            },1);
+            if ( count($arr) > 0 ) {
+                return array_values($arr)[0];
+            } else {
+                return null;
+            }
+            
+        }
+
         public function insert(array $datalist) : Document {
             $ids = [];
             for($i=0;$i<count($datalist); $i++) {
@@ -72,11 +86,6 @@ namespace Beluga {
         {
             $resultset = $this->get($fnc);            
             return array_values($resultset);
-        }
-
-        public function first(callable $fnc) {
-            $resultset = $this->get($fnc);
-            return ( count($resultset) > 0 ? array_values($resultset)[0] : null );
         }
 
         private function get(callable $fnc,?int $limit = null) {

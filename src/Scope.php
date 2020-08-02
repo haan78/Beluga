@@ -11,26 +11,6 @@ namespace Beluga {
         public function __construct() {
         }
 
-        public function __get($name)
-        {
-            if ( $name == "data" ) {
-                return $this->data;
-            } elseif ($name == "id") {
-                return $this->id;
-            } else {
-                throw new \Beluga\Exception("Unsupported access variable on scope");
-            }
-        }
-
-        public function __set($name, $value)
-        {
-            if ( $name == "data" || $name == "id") {
-                throw new \Beluga\Exception("The read-only variable can not set on the scope. Please use the `accept` method");
-            } else {
-                throw new \Beluga\Exception("Unsupported access variable on scope");
-            }
-        }
-
 
         public function abort() : void {
             $this->resultset = [];
@@ -66,6 +46,23 @@ namespace Beluga {
 
         public function __getResult() : array {
             return $this->resultset;
+        }
+
+        public function __get($name)
+        {
+            if ( $name == "data" ) {
+                return $this->data;
+            } elseif ($name == "id") {
+                return $this->id;
+            } else {
+                throw new \Beluga\Exception("Unsupported access variable on scope");
+            }
+        }
+
+        public function __set($name, $value) {
+            if ( $name == "data" || $name == "id") {
+                throw new \Beluga\Exception("The read-only variable can not set on the scope. Please use the `accept` method");
+            }
         }
     }
 }

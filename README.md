@@ -27,7 +27,7 @@ if the document does not exist it will be created.
     $db->document("document1");
     
 ## Insert Data into Document
-insert(array [DataSet])
+insert(array [DataSet]) : Db
 ### Parameter(s)
 - DataSet: It is an array of objects. Each object will be saved to disk as a new record.
 
@@ -55,7 +55,7 @@ insert(array [DataSet])
   );
 
 ## Update Data in a Document
-update( callable [Handler Function] ) : [database handler]
+Document::update( callable [Handler Function] ) : Db
 
 ## Parameter(s)
 - Handler Function(callable) : It is a user defined void function which has [Scope](#scope-class) parameter.   
@@ -73,7 +73,7 @@ update( callable [Handler Function] ) : [database handler]
     });
 
 ## Delete Data From Document
-    delete(callable [Handler Function] ) : [database handler]
+    Document::delete(callable [Handler Function] ) : Db
 
 ### Parameter(s)
 - Handler Function(callable) : It is a user defined void function which has [Scope](#scope-class) parameter. 
@@ -90,7 +90,7 @@ update( callable [Handler Function] ) : [database handler]
     });
 
 ## List Data From Document
-    list(callable [Handler Function]) : array
+    Document::list(callable [Handler Function]) : array
 
 ### Parameter(s)
 - Handler Function(callable) : It is a user defined void function which has [Scope](#scope-class) parameter.
@@ -128,9 +128,17 @@ update( callable [Handler Function] ) : [database handler]
 - abort: This method is used for stopping the loop. Accepted records before this command will be removed. That means all query operation will be canceled.
 
 ## Other Database Commands
+
+### Db Functions
 - Db::drop([document name]) :void<br/>
     Removes the document which has the given document name from the data directory.
 - Db::getDataFolder() : string<br/>
     Returns the data directoy of the database.
 - Db::exists([document name]) : bool<br/>
     Returns TRUE if the document exists in the data directory. Otherwise returns FALSE 
+
+### Document Functions
+- Document::find(callable [handler function]) : complex<br/>
+    This function is definitely the same as the "Document:: list" method the only difference is "Find" return single data of document element rather than an array of elements. When the first document element is accepted loop will end.
+- Document::updateOrInsert(callable [handler function],complex data) : Db<br/>
+    This function is run for a single element of the document. When the handler function accepts the element the loop will end. If there is no accepted element. Data will be added as a new element.   
