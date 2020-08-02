@@ -120,9 +120,17 @@ update( callable [Handler Function] ) : [database handler]
         public stop() : void 
         public abort() : void
     }
-- data: Indicates each record value in the document
-- id: Indicates each record id in the document. It is a readonly property. 
+- data: Indicates current record value in the document. It is a readonly property.
+- id: Indicates current record id in the document. It is a readonly property. 
 - accept: This method is used for accepting data for each element in the document. "data" parameter indicates an object which will be added to the query list.
 - denied: This method is used for canceling the last "accept" command. When the "denied" method calls the current element of the document is dropped from the query list.
 - stop: This method is used for stopping the loop. Accepted records before this command are reachable. But the loop will no be more continued.
 - abort: This method is used for stopping the loop. Accepted records before this command will be removed. That means all query operation will be canceled.
+
+## Other Database Commands
+- Db::drop([document name]) :void
+    Removes the document which has the given document name from the data directory.
+- Db::getDataFolder() : string
+    Returns the data directoy of the database.
+- Db::exists([document name]) : bool
+    Retunrs <b>TRUE</b> if document exists in data directory. Otherwise returns <b>FALSE</b> 

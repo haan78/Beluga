@@ -51,7 +51,7 @@ namespace Beluga {
             return new \Beluga\Document($this,$name);
         }
 
-        public function exist($documentName) {
+        public function exists($documentName) : bool {
             return is_dir($this->dataFolder."/$documentName");
         }
 
