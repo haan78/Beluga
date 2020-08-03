@@ -15,11 +15,14 @@ namespace Beluga {
 
         public function __construct($target)
         {
-            if (!is_dir($target)) {
-                mkdir($target);
+            $this->dataFolder = realpath( $target );
+            if (!is_dir($this->dataFolder)) {
+                if (mkdir($this->dataFolder)=== FALSE) {
+                    throw new \Beluga\Exception("Failed to create directory");
+                }
             }
             
-            $this->dataFolder = $target;
+            
             $this->scope = new Scope($this);
         }
 

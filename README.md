@@ -127,7 +127,7 @@ Document::update( callable [Handler Function] ) : Db
 - stop: This method is used for stopping the loop. Accepted records before this command are reachable. But the loop will no be more continued.
 - abort: This method is used for stopping the loop. Accepted records before this command will be removed. That means all query operation will be canceled.
 
-## Other Database Commands
+## Other Commands
 
 ### Db Functions
 - Db::drop([document name]) :void<br/>
