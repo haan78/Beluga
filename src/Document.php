@@ -82,10 +82,15 @@ namespace Beluga {
             return $this;
         }
 
-        public function list(callable $fnc): array
+        public function list(callable $fnc,bool $assoc = false): array
         {
-            $resultset = $this->get($fnc);            
-            return array_values($resultset);
+            $resultset = $this->get($fnc);
+            if ( $assoc ) {
+                return $resultset;
+            } else {
+                return array_values($resultset);
+            }       
+            
         }
 
         private function get(callable $fnc,?int $limit = null) {

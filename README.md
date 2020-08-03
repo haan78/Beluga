@@ -90,10 +90,11 @@ Document::update( callable [Handler Function] ) : Db
     });
 
 ## List Data From Document
-    Document::list(callable [Handler Function]) : array
+    Document::list(callable [Handler Function], bool $assoc = false) : array
 
 ### Parameter(s)
-- Handler Function(callable) : It is a user defined void function which has [Scope](#scope-class) parameter.
+- Handler Function(callable): It is a user defined void function which has [Scope](#scope-class) parameter.
+- assoc: If "assoc" sends as TRUE array returns associate with identifiers as key. Otherwise, the result will be an indexed array
 
 ### Return Value 
     An array of returning datasets.
@@ -130,7 +131,7 @@ Document::update( callable [Handler Function] ) : Db
 ## Other Commands
 
 ### Db Functions
-- Db::drop([document name]) :void<br/>
+- Db::drop(string [document name]) :Db<br/>
     Removes the document which has the given document name from the data directory.
     #### Example:
         $db->drop("students");
@@ -138,7 +139,7 @@ Document::update( callable [Handler Function] ) : Db
     Returns the data directoy of the database.
     #### Example:
         echo $db->getDataFolder();
-- Db::exists([document name]) : bool<br/>
+- Db::exists(string [document name]) : bool<br/>
     Returns TRUE if the document exists in the data directory. Otherwise returns FALSE
     #### Example:
         if ( $db->exists("courses") ) {
@@ -146,6 +147,16 @@ Document::update( callable [Handler Function] ) : Db
         } else {
             echo "Document dosen't exists";
         }
+
+- Db::getAffectedIds() : array of string<br/>
+    Returns the last databse operations identifiers.
+    #### Example:
+        $db->document("courses")->insert([
+            [ "courseName" => "Geology", "StudentId"=>1 ],
+            [ "courseName" => "Computer Programing 101", "StudentId"=>3 ]
+        ]);
+
+        print_r($db->getAffectedIds());
 
 ### Document Functions
 - Document::find(callable [handler function]) : complex<br/>

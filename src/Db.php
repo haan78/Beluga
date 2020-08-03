@@ -20,8 +20,7 @@ namespace Beluga {
                 if (mkdir($this->dataFolder)=== FALSE) {
                     throw new \Beluga\Exception("Failed to create directory");
                 }
-            }
-            
+            }          
             
             $this->scope = new Scope($this);
         }
