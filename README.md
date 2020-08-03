@@ -132,13 +132,40 @@ Document::update( callable [Handler Function] ) : Db
 ### Db Functions
 - Db::drop([document name]) :void<br/>
     Removes the document which has the given document name from the data directory.
+    #### Example:
+        $db->drop("students");
 - Db::getDataFolder() : string<br/>
     Returns the data directoy of the database.
+    #### Example:
+        echo $db->getDataFolder();
 - Db::exists([document name]) : bool<br/>
-    Returns TRUE if the document exists in the data directory. Otherwise returns FALSE 
+    Returns TRUE if the document exists in the data directory. Otherwise returns FALSE
+    #### Example:
+        if ( $db->exists("courses") ) {
+            echo "Document exists";
+        } else {
+            echo "Document dosen't exists";
+        }
 
 ### Document Functions
 - Document::find(callable [handler function]) : complex<br/>
     This function is definitely the same as the "Document:: list" method the only difference is "Find" return single data of document element rather than an array of elements. When the first document element is accepted loop will end.
+    #### Example:
+        $name = $db->document("students")->find(function(Scope $s) {
+            if ( $s->data["StudentId"] == 1 ) {
+                $s->accept($s->data["StudentName"]);
+            }
+        });
+
+        echo $name;
+        
 - Document::updateOrInsert(callable [handler function],complex data) : Db<br/>
-    This function is run for a single element of the document. When the handler function accepts the element the loop will end. If there is no accepted element. Data will be added as a new element.   
+    This function is run for a single element of the document. When the handler function accepts the element the loop will end. If there is no accepted element. Data will be added as a new element.
+    #### Example:
+        $db->document("courses")->updateOrInsert(function(Scope $s) {
+            $data = $s->data;
+            if ($data["StudentId"] == 3 && $data["courseName"] == "Biology") {
+                $data["courseName"] == "Biology 101";
+                $s->accept($data);
+            }
+        },[ "courseName" => "Biology 101", "StudentId"=> 3 ]);
