@@ -36,23 +36,23 @@ insert(array [DataSet]) : Db
 
 ### Example
     $db->document("students")->insert(
-    [
-      [ "StudentName" => "Ali", "StudentId"=> 1 ],
-      [ "StudentName" => "Veli", "StudentId"=> 2 ],
-      [ "StudentName" => "Hande", "StudentId"=> 3 ]
-    ]  
-  );
+        [
+            [ "StudentName" => "Ali", "StudentId"=> 1 ],
+            [ "StudentName" => "Veli", "StudentId"=> 2 ],
+            [ "StudentName" => "Hande", "StudentId"=> 3 ]
+        ]  
+    );
 
-  $db->document("courses")->insert(
-      [
-        [ "courseName" => "Math", "StudentId"=> 1 ],
-        [ "courseName" => "Chemistry", "StudentId"=> 1 ],
-        [ "courseName" => "Math", "StudentId"=> 2 ],
-        [ "courseName" => "Physics", "StudentId"=> 2 ],
-        [ "courseName" => "Literature", "StudentId"=> 2 ],
-        [ "courseName" => "Literature", "StudentId"=> 3 ]
-      ]      
-  );
+    $db->document("courses")->insert(
+        [
+            [ "courseName" => "Math", "StudentId"=> 1 ],
+            [ "courseName" => "Chemistry", "StudentId"=> 1 ],
+            [ "courseName" => "Math", "StudentId"=> 2 ],
+            [ "courseName" => "Physics", "StudentId"=> 2 ],
+            [ "courseName" => "Literature", "StudentId"=> 2 ],
+            [ "courseName" => "Literature", "StudentId"=> 3 ]
+        ]      
+    );
 
 ## Update Data in a Document
 Document::update( callable [Handler Function] ) : Db
@@ -121,7 +121,7 @@ Document::update( callable [Handler Function] ) : Db
         public abort() : void
     }
 - data: Indicates current record value in the document. It is a readonly property.
-- id: Indicates current record id in the document. It is a readonly property. 
+- id: Indicates current record identifier in the document. It is a readonly property. 
 - accept: This method is used for accepting data for each element in the document. "data" parameter indicates an object which will be added to the query list.
 - denied: This method is used for canceling the last "accept" command. When the "denied" method calls the current element of the document is dropped from the query list.
 - stop: This method is used for stopping the loop. Accepted records before this command are reachable. But the loop will no be more continued.
