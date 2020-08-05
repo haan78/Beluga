@@ -13,15 +13,16 @@ namespace Beluga {
         
         private array $affectedIds = [];
 
+        private float $time;
+
         public function __construct($target)
         {
-            $this->dataFolder = realpath( $target );
-            if (!is_dir($this->dataFolder)) {
-                if (mkdir($this->dataFolder)=== FALSE) {
-                    throw new \Beluga\Exception("Failed to create directory");
+            if (!is_dir($target)) {
+                if (mkdir($target)=== FALSE) {
+                    throw new \Beluga\Exception("Failed to create directory : ".$target);
                 }
-            }          
-            
+            }
+            $this->dataFolder = realpath( $target );
             $this->scope = new Scope($this);
         }
 
@@ -33,8 +34,16 @@ namespace Beluga {
             return $this->affectedIds;
         }
 
+        public function getTime() : float {
+            return $this->time;
+        }
+
         public function __setAffectedIds(array $ids) {
             $this->affectedIds = $ids;
+        }
+
+        public function __setTime(float $time) : void {
+            $this->time = $time;
         }
 
         public function drop($name) : Db {
