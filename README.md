@@ -157,6 +157,10 @@ Document::update( callable [Handler Function] ) : Db
         ]);
 
         print_r($db->getAffectedIds());
+- Db::getTime() : float<br/>
+    Return the last database operation time as second.
+    #### Example:
+        echo $db->getTime();
 
 ### Document Functions
 - Document::find(callable [handler function]) : complex<br/>
